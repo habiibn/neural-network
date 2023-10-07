@@ -104,3 +104,16 @@ function [outputValues] = activationFunction(inputValues, actFunc)
             end
     end
 end
+
+function [lossValue] = lossFunction(inputValues, outputValues, lossFunc)
+    switch lossFunc
+        case 'error'
+            lossValue = sum(outputValues - inputValues);
+        case 'mse'
+            lossValue = sum(outputValues.^2 - inputValues.^2)/length(outputValues);
+        case 'rmse'
+            lossValue = sqrt(sum(outputValues.^2 - inputValues.^2)/length(outputValues));
+        case 'mae'
+            lossValue = sum(abs(outputValues) - abs(inputValues))/length(outputValues);
+    end
+end
