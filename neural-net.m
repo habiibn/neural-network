@@ -11,11 +11,13 @@ networkLogs = {'';'';'';'';''};
 [W2, V2, B2, networkLogs{3}] = denseLayer(17, 'linear', V1, 24);
 [W3, V3, B3, networkLogs{4}] = denseLayer(24, 'relu', V2, 4);
 [Vo, networkLogs{5}] = outputLayer(4, 'linear', V3);
+model = struct('input',Vi,'wi',Wi,'w1',W1,'w2',W2,'w3',W3,'output',Vo);
+
 param = (size(Wi,1)*size(Wi,2)) + (size(W1,1)*size(W1,2)) + (size(W2,1)*size(W2,2)) ...
     + (size(W3,1)*size(W3,2)) + (length(B1)+length(B2)+length(B3));
 networkLogs{6} = ['Total parameter : ' num2str(param)];
 disp(networkLogs{6})
-disp(Vo')
+disp(model)
 
 % function [outputValues, networkLogs] = neuralNetwork(varargin)
 %     input ==> input values, N output, layer's neuron
