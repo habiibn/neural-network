@@ -117,3 +117,10 @@ function [lossValue] = lossFunction(inputValues, outputValues, lossFunc)
             lossValue = sum(abs(outputValues) - abs(inputValues))/length(outputValues);
     end
 end
+
+function [updatedParams] = backpropagation(output, label, model, learningRate)
+    params = model;
+    % gradient descent algorithm here
+    gradient = lossFunction(label, output, model.lossFunc)
+    updatedParams = params - learningRate*(gradient);
+end
