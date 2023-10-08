@@ -1,5 +1,4 @@
-% Neural Network
-% Initialize parameter
+% Neural Network Initialize parameter
 
 clear;
 clc;
@@ -19,27 +18,27 @@ networkLogs{6} = ['Total parameter : ' num2str(param)];
 disp(networkLogs{6})
 disp(model)
 
-% function [outputValues, networkLogs] = neuralNetwork(varargin)
-%     input ==> input values, N output, layer's neuron
-%     narginchk(4,10)
-% 
-%     inputValues = varargin(1);
-%     neuronLayer1 = varargin(3);
-%     activationFunction1 = varargin(4);
-%     neuronLayer2 = varargin(5);
-%     activationFunction2 = varargin(6);
-%     neuronLayer3 = varargin(7);
-%     activationFunction3 = varargin(8);
-%     outputNeuron = varargin(9);
-%     outputFunction = varargin(10);
-% 
-%     [Wi, Vi, networkLogs(1)] = inputLayer(inputValues, neuronLayer1);
-%     [W1, V1, B1, networkLogs(2)] = denseLayer(neuronLayer1, activationFunction1, Vi, neuronLayer1);
-%     [W2, V2, B2, networkLogs(3)] = denseLayer(neuronLayer1, activationFunction2, V1, neuronLayer2);
-%     [W3, V3, B3, networkLogs(4)] = denseLayer(neuronLayer1, activationFunction3, V2, neuronLayer3);
-%     [outputValues, networkLogs(5)] = outputLayer(outputNeuron, outputFunction, V3);
-% 
-% end 
+function [model] = neuralNetwork(varargin)
+    % input ==> input values, N output, layer's neuron
+    narginchk(4,10)
+
+    inputValues = varargin(1);
+    neuronLayer1 = varargin(3);
+    activationFunction1 = varargin(4);
+    neuronLayer2 = varargin(5);
+    activationFunction2 = varargin(6);
+    neuronLayer3 = varargin(7);
+    activationFunction3 = varargin(8);
+    outputNeuron = varargin(9);
+    outputFunction = varargin(10);
+
+    [Wi, Vi, networkLogs(1)] = inputLayer(inputValues, neuronLayer1);
+    [W1, V1, B1, networkLogs(2)] = denseLayer(neuronLayer1, activationFunction1, Vi, neuronLayer1);
+    [W2, V2, B2, networkLogs(3)] = denseLayer(neuronLayer1, activationFunction2, V1, neuronLayer2);
+    [W3, V3, B3, networkLogs(4)] = denseLayer(neuronLayer1, activationFunction3, V2, neuronLayer3);
+    [outputValues, networkLogs(5)] = outputLayer(outputNeuron, outputFunction, V3);
+
+end 
 
 function [outputWeight, outputValues, biases, layerInfo] = denseLayer(neuron, actFunc, inputWeight, nOutput)
     % inputWeight is n x n matrix consisted of weights from input neurons
