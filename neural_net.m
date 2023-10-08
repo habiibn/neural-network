@@ -19,7 +19,7 @@ disp(networkLogs{6})
 disp(model)
 
 function [model] = neuralNetwork(varargin)
-    % input ==> input values, N output, layer's neuron
+    % Mainly forward propagation and save it into computable struct of NN model
     narginchk(4,10)
 
     inputValues = varargin(1);
@@ -122,6 +122,12 @@ end
 function [updatedParams] = backpropagation(output, label, model, learningRate)
     params = model;
     % gradient descent algorithm here
-    gradient = lossFunction(label, output, model.lossFunc)
+    gradient = lossFunction(label, output, model.lossFunc);
     updatedParams = params - learningRate*(gradient);
+end
+
+function [newModel] = training(inputData, label, model,learningRate)
+    % resulting model with new weight
+    output = inputData*model;
+    newModel = backpropagation(output, label, model, learningRate);
 end
