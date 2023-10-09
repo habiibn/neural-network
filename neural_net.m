@@ -49,7 +49,7 @@ function [outputWeight, outputValues, biases, layerInfo] = denseLayer(neuron, ac
     for i = 1:neuron
         values(i) = sum(inputWeight(:,1))+biases(i);
     end
-    values = activationFunction(values, actFunc);
+    values = activationFunction(values, actFunc, 'forward');
     
     for i = 1:neuron
         for j = 1:nOutput
@@ -80,29 +80,49 @@ function [outputValues, layerInfo] = outputLayer(neuron, actFunc, inputWeight)
     for i = 1:neuron
         values(i) = sum(inputWeight(:,i))+biases(i);
     end
-    outputValues = activationFunction(values, actFunc);
+    outputValues = activationFunction(values, actFunc, 'forward');
     layerInfo = ['Output Layer with ' int2str(neuron) ' data'];
     disp(layerInfo);
 end
 
-function [outputValues] = activationFunction(inputValues, actFunc)
-    switch actFunc
-        case 'linear'
-            outputValues = inputValues;
-            outputValues = outputValues./sum(outputValues);
-        case 'sigmoid'
-            outputValues = 1./(1+exp(-inputValues));
-            outputValues = outputValues./sum(outputValues);
-        case 'tanh'
-            outputValues = (exp(inputValues) - exp(-inputValues)) ./ (exp(inputValues) + exp(-inputValues));
-            outputValues = outputValues./sum(outputValues);
-        case 'relu'
-            if inputValues <= 0
-                outputValues = 0;
-            else
+function [outputValues] = activationFunction(inputValues, actFunc, stepType)
+    if strcmpi(stepType,'forward')
+        switch actFunc
+            case 'linear'
                 outputValues = inputValues;
                 outputValues = outputValues./sum(outputValues);
-            end
+            case 'sigmoid'
+                outputValues = 1./(1+exp(-inputValues));
+                outputValues = outputValues./sum(outputValues);
+            case 'tanh'
+                outputValues = (exp(inputValues) - exp(-inputValues)) ./ (exp(inputValues) + exp(-inputValues));
+                outputValues = outputValues./sum(outputValues);
+            case 'relu'
+                if inputValues <= 0
+                    outputValues = 0;
+                else
+                    outputValues = inputValues;
+                    outputValues = outputValues./sum(outputValues);
+                end
+        end
+    elseif strcmpi(stepType,'back')
+        switch actFunc
+            case 'linear'
+                outputValues = inputValues;
+                outputValues = outputValues./sum(outputValues);
+            case 'sigmoid'
+                outputValues = exp(-inputValues)/(1+exp(-inputValues)).^2;
+                outputValues = outputValues./sum(outputValues);
+            case 'tanh'
+                outputValues = 1- {((exp(inputValues) - exp(-inputValues)).^2) ./ ((exp(inputValues) + exp(-inputValues)).^2)};
+                outputValues = outputValues./sum(outputValues);
+            case 'relu'
+                if inputValues <= 0
+                    outputValues = 0;
+                else
+                    outputValues = 1;
+                end
+        end
     end
 end
 
@@ -120,10 +140,15 @@ function [lossValue] = lossFunction(inputValues, outputValues, lossFunc)
 end
 
 function [updatedParams] = backpropagation(output, label, model, learningRate)
-    params = model;
+    params = model.W1;
     % gradient descent algorithm here
-    gradient = lossFunction(label, output, model.lossFunc);
-    updatedParams = params - learningRate*(gradient);
+    loss = lossFunction(label, output, model.lossFunc);
+    % gradient of output layer
+    actFuncGradient = activationFunction(output,'back');
+    outputGradient = output'.*{loss*actFuncGradient};
+    % gradient of hidden dense layer
+
+    updatedParams = params - learningRate*(outputGradient);
 end
 
 function [newModel] = training(inputData, label, model,learningRate)
@@ -131,3 +156,16 @@ function [newModel] = training(inputData, label, model,learningRate)
     output = inputData*model;
     newModel = backpropagation(output, label, model, learningRate);
 end
+
+% ef gradient_descent(self, x, y, iterations):
+%         for i in range(iterations):
+%             Xi = x
+%             Xj = self.sigmoid(Xi, self.wij)
+%             yhat = self.sigmoid(Xj, self.wjk)
+%             # gradients for hidden to output weights
+%             g_wjk = np.dot(Xj.T, (y - yhat) * self.sigmoid_derivative(Xj, self.wjk))
+%             # gradients for input to hidden weights
+%             g_wij = np.dot(Xi.T, np.dot((y - yhat) * self.sigmoid_derivative(Xj, self.wjk), self.wjk.T) * self.sigmoid_derivative(Xi, self.wij))
+%             # update weights
+%             self.wij += g_wij
+%             self.wjk += g_wjk
