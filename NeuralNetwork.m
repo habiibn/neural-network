@@ -2,13 +2,15 @@ classdef NeuralNetwork
     properties
         model;
         weight;
-        
+        layer;
+        input;
+        output;
     end
     methods
-        function model = neural_net(layers, input, output)
-            model.input = input;
-            model.output = output;
-            model.layers = layers;
+        function obj = NeuralNetwork(layers, input, output)
+            obj.input = input;
+            obj.output = output;
+            obj.layer = layers;
         end
         function model = layers(layertypes, weights)
             model.layertypes = layertypes;

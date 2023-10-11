@@ -145,7 +145,7 @@ function [updatedParams] = backpropagation(output, label, model, learningRate)
     loss = lossFunction(label, output, model.lossFunc);
     % gradient of output layer
     actFuncGradient = activationFunction(output,'back');
-    outputGradient = output'.*{loss*actFuncGradient};
+    outputGradient = output'.*(loss*actFuncGradient);
     % gradient of hidden dense layer
 
     updatedParams = params - learningRate*(outputGradient);
