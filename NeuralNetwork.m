@@ -28,6 +28,7 @@ classdef NeuralNetwork
         end
 
         function weights = assignParams(obj)
+            % TODO: get parsed layer and assign weights and biases into obj
             weights.('wi') = obj.layer.layer1; % first layer is input layer
             for i = 2:length(fieldnames(obj.layer))
                 if length(fieldnames(obj.layer)) == i
@@ -41,19 +42,24 @@ classdef NeuralNetwork
         end
 
         function displayNetwork(obj)
+            % TODO: create summary of network and display it
             disp(obj.layer)
         end
 
         function obj = training(obj, inputs, labels, epoch, learningRate, batchSize)
+            % TODO: parsing input parameyer, complete backpropagation and update parameter
             obj.input = inputs;
             obj.label = labels;
             [tempWeights, tempBiases] = temporaryParameters(obj);
+            % Train network
             for i = 1 : epoch
+                % Iterate through all inputs with known label
                 for j = 1 : length(inputs)
                     obj.output = forwardPropagation(obj, j);
                     [obj.weight, obj.bias] = backPropagation(obj);
-                    if j ~= batchSize
-                        index = mod(j, batchSize);
+                    % Update parameter every batch
+                    index = mod(j, batchSize);
+                    if index ~= 0
                         tempWeights(index) = obj.weight;
                         tempBiases(index) = obj.bias;
                     else
@@ -66,13 +72,19 @@ classdef NeuralNetwork
         end
         
         function [tempWeight, tempBias] = temporaryParameters(obj)
+            % This function is being used for saving temporary parameter
+            % required to be updated later
             for i = 1 : length(fieldnames(obj.weight))
-                
+                tempWeight = obj.weight;
+                tempBias = obj.bias;
             end
         
         end
 
         function outputs = forwardPropagation(obj, inputs)
+            % Forward propagation for one pair of input and label,
+            % resulting output
+
             outputs = inputs;
             for i = 1 : length(fieldnames(obj.weight))
                 w = ['w',int2str(i)];
@@ -84,12 +96,13 @@ classdef NeuralNetwork
 
         function [weights, biases] = backPropagation(obj)
             % Return gradient of weights and biases 
+            % TODO: get gradient from layer end to layer input
             weights = obj.weight;
             biases = obj.bias;
             for i = 1 : length(fieldnames(obj.weight))
                 w = ['w',int2str(i)];
                 outputs = outputs'*obj.weight.(w);
-                outputs = activationFunction(outputs, actFunc, 'forward');
+                outputs = activationFunction(outputs, actFunc, 'back');
             end
         end
 
@@ -133,5 +146,19 @@ classdef NeuralNetwork
                 end
             end
         end
+
+        function lossValue = lossFunction(outputValues, inputValues)
+            switch lossFunc
+                case 'error'
+                    lossValue = sum(outputValues - inputValues);
+                case 'mse'
+                    lossValue = sum((outputValues - inputValues).^2) / length(outputValues);
+                case 'rmse'
+                    lossValue = sqrt(sum((outputValues - inputValues).^2) / length(outputValues));
+                case 'mae'
+                    lossValue = sum(abs(outputValues - inputValues)) / length(outputValues);
+            end
+        end
+
     end
 end
