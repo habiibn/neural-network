@@ -24,6 +24,7 @@ classdef NeuralNetwork
             for i = 1:length(obj.layer)
                 w = ['layer',int2str(i)];
                 layers.(w) = obj.layer(i);
+%                 layers.(w).neuron = obj.layer(i);
             end
         end
 
@@ -94,15 +95,22 @@ classdef NeuralNetwork
             end
         end
 
-        function [weights, biases] = backPropagation(obj)
+        function [dW, dB] = backPropagation(obj)
             % Return gradient of weights and biases 
             % TODO: get gradient from layer end to layer input
-            weights = obj.weight;
-            biases = obj.bias;
-            for i = 1 : length(fieldnames(obj.weight))
-                w = ['w',int2str(i)];
-                outputs = outputs'*obj.weight.(w);
-                outputs = activationFunction(outputs, actFunc, 'back');
+            dW = obj.weight;
+            dB = obj.bias;
+            dA_prev = obj.output;
+            nLayer = length(fieldnames(obj.weight));
+
+            for i = 0 : nLayer-1
+                w = ['w',int2str(nLayer - i)];
+                b = ['w',int2str(nLayer - i)];
+                actFunc = ['Layer',int2str(nLayer - i)];
+
+                dA_curr = dA_prev;
+                dA = dA'*obj.weight.(w);
+                dA = activationFunction(dA, actFunc, 'back');
             end
         end
 
