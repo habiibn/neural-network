@@ -11,6 +11,10 @@ classdef NeuralNetwork
     end
     methods
         function obj = NeuralNetwork(layers)
+        % TODO : model = NeuralNetwork(Data, [10, 'relu'], [20, 'sigmoid'])
+        % or model = NeuralNetwork(['input',Data], ['Dense', 10, 'relu'], ['Dense', 20,'sigmoid'])
+        % or model = NeuralNetwork(Input(Data), Dense(10, 'relu), Dense(20, 'sigmoid'))
+        
 %             obj.input = input;
 %             obj.output = output;
             obj.layer = layers;

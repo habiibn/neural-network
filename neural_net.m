@@ -1,12 +1,12 @@
 % Neural Network Initialize parameter
-
 clear;
 clc;
+
 V = rand(25,1);
 disp(V')
 networkLogs = {'';'';'';'';''};
-[Wi, Vi, networkLogs{1}] = inputLayer(V,7);
-[W1, V1, B1, networkLogs{2}] = denseLayer(7, 'relu', Vi, 17);
+[Wi, Vi, networkLogs{1}] = inputLayer(V,7); % should be just V as a parameter and having Vi as the only output 
+[W1, V1, B1, networkLogs{2}] = denseLayer(7, 'relu', Vi, 17); % 
 [W2, V2, B2, networkLogs{3}] = denseLayer(17, 'linear', V1, 24);
 [W3, V3, B3, networkLogs{4}] = denseLayer(24, 'relu', V2, 4);
 [Vo, networkLogs{5}] = outputLayer(4, 'linear', V3);
@@ -17,7 +17,17 @@ param = (size(Wi,1)*size(Wi,2)) + (size(W1,1)*size(W1,2)) + (size(W2,1)*size(W2,
 networkLogs{6} = ['Total parameter : ' num2str(param)];
 disp(networkLogs{6})
 disp(model)
-
+%% 
+inp = rand(7,1);
+[w1, b1, v1, acfun] = nn_layer(inp, 3, 'linear');
+layer1 = struct('input',inp,'weight',w1,'bias',b1,'output',v1,'activation_function',acfun);
+[w2, b2, v2, acfun] = nn_layer(v1, 2, 'sigmoid');
+layer2 = struct('input',v1,'weight',w2,'bias',b2,'output',v2,'activation_function',acfun);
+[w3, b3, v3, acfun] = nn_layer(v2, 3, 'relu');
+layer3 = struct('input',v2,'weight',w3,'bias',b3,'output',v3,'activation_function',acfun);
+[w4, b4, v4, acfun] = nn_layer(v3, 7, 'sigmoid');
+layer4 = struct('input',v3,'weight',w4,'bias',b4,'output',v4,'activation_function',acfun);
+%%
 function [model] = neuralNetwork(varargin)
     % Mainly forward propagation and save it into computable struct of NN model
     narginchk(4,10)
@@ -157,7 +167,8 @@ function [newModel] = training(inputData, label, model,learningRate)
     newModel = backpropagation(output, label, model, learningRate);
 end
 
-% ef gradient_descent(self, x, y, iterations):
+%% Python reference
+% def gradient_descent(self, x, y, iterations):
 %         for i in range(iterations):
 %             Xi = x
 %             Xj = self.sigmoid(Xi, self.wij)
@@ -169,3 +180,24 @@ end
 %             # update weights
 %             self.wij += g_wij
 %             self.wjk += g_wjk
+
+%% Dense Layer
+
+function [weights, biases, output_values, activation_function] = nn_layer(input_values, neuron_num, activation_function_type)
+    % Initialize parameters
+    weights = weight_generator(length(input_values), neuron_num);
+    biases = bias_generator(neuron_num);
+    
+    % Output calculation
+    activation_function = activation_function_type;
+    output_values = weights' * input_values + biases;
+    output_values = activationFunction(output_values, activation_function, 'forward');
+end
+
+function weights = weight_generator(num_input, num_output)
+    weights = rand(num_input,num_output);
+end
+
+function biases = bias_generator(neuron_num)
+    biases = rand(neuron_num, 1);
+end
